@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sorry Candy 💖</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #d8b4f8, #f3e8ff);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 90%;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #fff;
+      text-shadow: 2px 2px #ff6b81;
+      margin-bottom: 20px;
+    }
+
+    .button {
+      padding: 12px 25px;
+      font-size: 1.2rem;
+      color: white;
+      background: #ff6b81;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background 0.3s;
+      margin: 15px;
+    }
+
+    .button:hover {
+      background: #ff4757;
+    }
+
+    .message {
+      display: none;
+      font-size: 1.3rem;
+      color: white;
+      max-width: 85%;
+      padding: 25px;
+      margin-top: 20px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.3);
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    #game-container {
+      display: none;
+      grid-template-columns: repeat(4, 60px);
+      grid-gap: 12px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .card {
+      width: 60px;
+      height: 60px;
+      font-size: 2rem;
+      background: #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .card.flipped {
+      background: #ffe0f0;
+    }
+
+    #game-message {
+      display: none;
+      color: #fff;
+      font-size: 1.5rem;
+      margin-top: 20px;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      transform: rotate(-45deg);
+      animation: float 6s infinite ease-in;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      border-radius: 50%;
+    }
+
+    .heart::before { top: -10px; left: 0; }
+    .heart::after { left: 10px; top: 0; }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(-45deg); opacity: 1; }
+      100% { transform: translateY(-100vh) rotate(-45deg); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #hug-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom right, #fdd6f5, #e7c6ff);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 9999;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    #hug-screen h2 {
+      font-size: 2.2rem;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    #hug-emoji {
+      font-size: 5rem;
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .floating-emoji {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: emojiFloat 5s linear infinite;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    @keyframes emojiFloat {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+    }
+
+    #final-screen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, #fad0c4, #ffd1ff);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 10000;
+      padding: 20px;
+    }
+
+    #final-screen h2 {
+      font-size: 2.5rem;
+      color: #6b0f1a;
+      margin-bottom: 30px;
+    }
+
+    #yesBtn {
+      position: relative;
+      transition: all 0.5s ease;
+    }
+
+    #yesBtn:hover {
+      transform: translateX(200px) rotate(360deg);
+    }
+
+    #love-screen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top right, #ffe6f0, #fcd9ff);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 10001;
+      padding: 20px;
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    #love-screen h2 {
+      font-size: 2.5rem;
+      color: #d63384;
+    }
+
+    .love-text {
+      font-size: 1.3rem;
+      color: #6f1d1b;
+      max-width: 600px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-container" id="main">
+    <h1 id="heading">Hey Candyyy 💖</h1>
+
+    <button class="button" id="btn1" onclick="showFirst()">Click me, please?</button>
+
+    <div class="message" id="message1">
+      Akkkaaaaaaa, or should I say my sweetest Candyyy 🐥🩷,<br><br>
+      I'm really sorry. I know I messed up — and hurting you is the last thing I ever wanted.
+      You've always been the brightest part of my life, and losing your smile... it's like losing the sun. 🌞<br><br>
+      Please forgive this emotional potato 🥔.<br>
+      I miss you like a coder misses semicolons (which is... a lot).<br><br>
+      Let me make it up to you, one smile at a time. 💕
+    </div>
+
+    <button class="button" id="btn2" onclick="showSecond()" style="display:none;">One more thing...</button>
+
+    <div class="message" id="message2">
+      I know "sorry" might not be enough.<br><br>
+      But I want you to know — every tear I may have caused you, every silence between us, eats away at me.<br><br>
+      You didn’t deserve any pain from me. You only ever gave me love, patience, and joy.<br><br>
+      Please… give me a chance to earn back your trust, one moment at a time.🥺
+    </div>
+
+    <button class="button" id="gameBtn" onclick="startGame()" style="display:none;">Play a cute game?</button>
+
+    <div id="game-container"></div>
+    <div id="game-message">
+      Yayy! You matched them all 💖 You're truly the missing piece to my heart!
+      <br><br>
+      <button class="button" onclick="sendHug()">Send Hug 🤗</button>
+    </div>
+  </div>
+
+  <!-- Hug Screen -->
+  <div id="hug-screen">
+    <h2>Sending you the biggest hug ever 🤗</h2>
+    <div id="hug-emoji">🤗</div>
+    <p style="color:white; font-size:1.2rem; margin-top:20px;">Because you deserve all the warmth in the world 💞</p>
+    <br>
+    <button class="button" onclick="goToFinal()">Next 💌</button>
+  </div>
+
+  <!-- Final Question Screen -->
+  <div id="final-screen">
+    <h2>Still mad at me? 😔</h2>
+    <button class="button" id="yesBtn" onclick="escapeYes()">Yes</button>
+    <button class="button" onclick="showLoveMessage()">No</button>
+  </div>
+
+  <!-- Love Message Screen -->
+  <div id="love-screen">
+    <h2>Thank you for forgiving me 💖</h2>
+    <p class="love-text">
+      You have no idea how much this means to me.<br><br>
+      I promise to be better, to cherish you even more, and to protect your smile with all I’ve got.<br><br>
+      You are my sunshine, my safe space, my heart's favorite melody. 🎶💞<br><br>
+      I love you more than words can say, Candy. Forever and always. 💘
+    </p>
+  </div>
+
+  <script>
+    function showFirst() {
+      document.getElementById("message1").style.display = "block";
+      document.getElementById("btn1").style.display = "none";
+      document.getElementById("btn2").style.display = "inline-block";
+      document.getElementById("heading").style.display = "none";
+    }
+
+    function showSecond() {
+      document.getElementById("message1").style.display = "none";
+      document.getElementById("message2").style.display = "block";
+      document.getElementById("btn2").style.display = "none";
+      document.getElementById("gameBtn").style.display = "inline-block";
+    }
+
+    function startGame() {
+      document.getElementById("message2").style.display = "none";
+      document.getElementById("gameBtn").style.display = "none";
+      document.getElementById("game-container").style.display = "grid";
+
+      const emojis = ['🩷','🐥','🙄','💫','🌝','🍬','🪻','🍭'];
+      const pairs = [...emojis, ...emojis].sort(() => 0.5 - Math.random());
+
+      const container = document.getElementById("game-container");
+      container.innerHTML = '';
+      let flipped = [];
+      let matched = [];
+
+      pairs.forEach((emoji, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.emoji = emoji;
+        card.dataset.index = index;
+        card.innerHTML = "❓";
+
+        card.onclick = () => {
+          if (card.classList.contains("flipped") || flipped.length === 2 || matched.includes(index)) return;
+
+          card.classList.add("flipped");
+          card.innerHTML = emoji;
+          flipped.push({index, emoji, card});
+
+          if (flipped.length === 2) {
+            const [first, second] = flipped;
+            if (first.emoji === second.emoji) {
+              matched.push(first.index, second.index);
+              flipped = [];
+
+              if (matched.length === pairs.length) {
+                document.getElementById("game-message").style.display = "block";
+                createFloatingEmojis();
+              }
+            } else {
+              setTimeout(() => {
+                first.card.classList.remove("flipped");
+                second.card.classList.remove("flipped");
+                first.card.innerHTML = "❓";
+                second.card.innerHTML = "❓";
+                flipped = [];
+              }, 800);
+            }
+          }
+        };
+        container.appendChild(card);
+      });
+    }
+
+    function sendHug() {
+      document.getElementById("main").style.display = "none";
+      document.getElementById("hug-screen").style.display = "flex";
+      createFloatingEmojis();
+    }
+
+    function goToFinal() {
+      document.getElementById("hug-screen").style.display = "none";
+      document.getElementById("final-screen").style.display = "flex";
+    }
+
+    function escapeYes() {
+      const btn = document.getElementById("yesBtn");
+      btn.style.position = "absolute";
+      btn.style.top = Math.random() * 80 + "vh";
+      btn.style.left = Math.random() * 80 + "vw";
+    }
+
+    function showLoveMessage() {
+      document.getElementById("final-screen").style.display = "none";
+      document.getElementById("love-screen").style.display = "flex";
+      createFloatingEmojis(25);
+    }
+
+    for (let i = 0; i < 30; i++) {
+      let heart = document.createElement("div");
+      heart.className = "heart";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = 3 + Math.random() * 5 + "s";
+      document.body.appendChild(heart);
+    }
+
+    function createFloatingEmojis(count = 60) {
+      const emojis = ['💖','✨','🌸','💫','🩷','🫶','🌟'];
+      for (let i = 0; i < count; i++) {
+        const emoji = document.createElement("div");
+        emoji.classList.add("floating-emoji");
+        emoji.style.left = Math.random() * 100 + "vw";
+        emoji.style.top = "100vh";
+        emoji.style.animationDuration = 4 + Math.random() * 3 + "s";
+        emoji.style.fontSize = (1 + Math.random() * 2) + "rem";
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        document.body.appendChild(emoji);
+
+        setTimeout(() => {
+          emoji.remove();
+        }, 7000);
+      }
+    }
+  </script>
+</body>
+</html>
